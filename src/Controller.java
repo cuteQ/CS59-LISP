@@ -35,9 +35,6 @@ public class Controller {
                 break;
             }
         }
-        for (String item : res) {
-            System.out.println(item);
-        }
         return lambda(res.get(0), res.get(1));
     }
 
