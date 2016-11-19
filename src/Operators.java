@@ -24,7 +24,6 @@ public class Operators {
         return String.valueOf(result);
     }
 
-
     public static String multiply(List<String> parameters) {
         double result = 0;
         for(String str: parameters) {
@@ -329,18 +328,13 @@ public class Operators {
     public static String nth(List<String> parameters) throws Exception{
         String index = parameters.get(0);
         String list = parameters.get(1);
-
-        System.out.println("nth index:" + index + " nth list: " + list);
         if (list == null || list.length() == 0) {
             return NIL;
         }
         if (index.startsWith("'")) index = index.substring(1);
         if (list.startsWith("'")) list = list.substring(1);
         if(!index.matches("\\+?\\d+")) throw new NTHNotANonNegativeInteger("*** - NTH: " + index + " is not a non-negative integer");
-//        if(!list.startsWith("(") || !list.endsWith(")")) throw new NotAList("*** - NTH: " + list + " is not a list");
         list = list.substring(1, list.length() - 1);
-        StringBuilder sb = new StringBuilder();
-
         List<String> result = new ArrayList<>();
 
         int len = list.length();
@@ -494,37 +488,9 @@ public class Operators {
         }
     }
 
-    static class LengthTooManyArg extends Exception {
-        public LengthTooManyArg(String msg) {
+    static class UndefinedFunction extends Exception {
+        public UndefinedFunction(String msg){
             super(msg);
         }
-    }
-
-    public static void main(String[] strs) throws Exception {
-        int num1 = 21;
-        int num2 = 2;
-        String s = "(s         s b c (d   e))";
-        s = s.replaceAll("\\s+", " ");
-//        System.out.println(divide(num1, num2));
-//        System.out.println(car(s));
-//        System.out.println(cdr(s).toUpperCase());
-//        System.out.println(cons("1", "(2)"));
-//        System.out.println(eql("1", "'2.0"));
-//
-//        System.out.println(nth("0", "'(a (aa (a)))"));
-//        System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
-//        System.out.print("lenth: ");
-//        System.out.println(length("'((a b) aa () ((ds)) HJ   (232 789) () (sd)  )"));
-//
-//
-//        System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
-//        System.out.println("nth: " + nth("1", "'(a (1 3) c)"));
-//        System.out.println("Reverse: " + reverse("'(1 3 (4 6) 9)"));
-//        System.out.println("Sort: " + sort("'(4 6 1 2)", "'<"));
-//        System.out.println("Numberp: " + numberp("23"));
-//        System.out.println("List: " + list("2 3 4 '(4 '(8 9) 5)"));
-//        System.out.println("Null: " + nullFunc("()"));
-//        System.out.println("Consp: " + consp("'(112 1 2)"));
-//        System.out.println("Append: " + append("'(20 100 12) 'a"));
     }
 }

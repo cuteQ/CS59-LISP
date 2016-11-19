@@ -1,34 +1,15 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by qianyuzhong on 11/18/16.
  */
 public class Controller {
-    public static void main(String[] strs) throws Exception {
-//        String expression = "(funcall (lambda (x y) (+ x y 100)) 40 20)";
-//        String expression = "(+ (nth 3 '(7 9 (23 1) 12)) (+ 1 (+ 2 3) 2) (+ 2 3))";
-//        String expression = "(funcall (lambda (x y) (+  (nth x '(7 9 (23 1) 12)) (+ 1 (+ 2 3) 2) (+ y 3))) 3 100)";
-//        String expression = "(funcall (lambda (x y) (+ (car (nth x '(7 9 (23 1) 12))) (+ 1 (+ 2 3) 2) (+ y 3))) 2 100)";
-//        String expression = "(funcall (lambda (x y z) (sort '(x y 100 z) '<)) 40 20 12)";
-//        String expression = "(funcall (lambda (x y z) (reverse '(x y 100 z))) 40 20 12)";
-//        String expression = "(funcall (lambda (x y z) (car (cdr '(x y 100 z)))) 40 20 12)";
-//        String expression = "(funcall (lambda (x y z) (append (cdr '(x y 100 z)) 'a)) 40 20 12)";
-//        String expression = "(funcall (lambda (x y z) (list '(x y) 100 z)) 40 10 50)";
-//        String expression = "(funcall (lambda (x) (numberp x)) 20)";
-        String expression = "(funcall (lambda (x y) (consp '(x y 10))) 20 10)";
-        String regularExpression = funcall(expression);
-
-        System.out.println(regularExpression);
-        String result = parse(regularExpression);
-        System.out.println(result);
-    }
-
     public static final String NIL = "NIL";
     public static String funcall(String obj) throws Exception {
         if (!obj.startsWith("(") || !obj.endsWith(")")) return NIL;
+        if (!obj.contains("lambda")) {
+            return obj;
+        }
         obj = obj.trim();
         obj = obj.substring(1, obj.length() - 1);
         int first = 0;
@@ -38,7 +19,7 @@ public class Controller {
         count++;
         String operator = obj.substring(0, first).trim();
         if (!operator.equals("funcall")) {
-            throw new UndefinedFunction("*** - EVAL: undefined function " + operator);
+            throw new Operators.UndefinedFunction("*** - EVAL: undefined function " + operator);
         }
         List<String> res = new ArrayList<>();
         for (int i = first+1; i < obj.length(); i++) {
@@ -57,6 +38,9 @@ public class Controller {
         return lambda(res.get(0), res.get(1));
     }
 
+    /*
+    Return the value of the lambda function
+     */
     public static String lambda(String exp, String para) throws Exception {
         int first = 0;
         int end = 0;
@@ -114,12 +98,9 @@ public class Controller {
         return result;
     }
 
-    static class UndefinedFunction extends Exception {
-        public UndefinedFunction(String msg){
-            super(msg);
-        }
-    }
-
+    /*
+     Parse the function to return the result
+     */
     public static String parse(String expression) throws Exception {
         expression = expression.trim().replaceAll("//s+", " ");
         int len = expression.length();
@@ -174,6 +155,9 @@ public class Controller {
         return result;
     }
 
+    /*
+    Used to call the function in the operators.class
+     */
     public static String callFunction(String operator, List<String> parameters) throws Exception {
         String result;
         switch(operator) {
@@ -244,8 +228,21 @@ public class Controller {
                 result = Operators.sort(parameters);
                 break;
             default:
-                result = "To be develop or Invalid operator name!";
+                result = "To be developed or Invalid operator name!";
         }
         return result;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int number = 0;
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            number++;
+            System.out.print("[" + number + "]> ");
+            String expression = scanner.nextLine();
+            String regularExpression = funcall(expression);
+            String result = parse(regularExpression);
+            System.out.println(result);
+        }
     }
 }
