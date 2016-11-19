@@ -1,4 +1,3 @@
-import java.security.spec.ECFieldF2m;
 import java.util.*;
 
 
@@ -125,10 +124,6 @@ public class Operators {
         return NIL;
     }
 
-//    public static String append(String obj, String obj2) {
-//
-//    }
-
     public static String member(String item, String obj) {
         if(item.startsWith("'")) item = item.substring(1);
         if(obj.startsWith("'")) obj = obj.substring(1);
@@ -146,6 +141,52 @@ public class Operators {
             }
         }
         return sb.length() == 0 ? NIL: sb.toString();
+    }
+
+
+    public static String append(String obj) throws Exception{
+        StringBuilder sb = new StringBuilder();
+        obj = obj.trim();
+        int first = 0;
+        int end = 0;
+        int count = 0;
+        int numOfParent = 0;
+        sb.append("(");
+        for (int i = 0; i < obj.length(); i++) {
+            if (String.valueOf(obj.charAt(i)).equals("'")) {
+                if (count == 0) {
+                    first = i + 1;
+                }
+            }
+            if (obj.charAt(i) == '(') {
+                count++;
+            } else if (obj.charAt(i) == ')') {
+                count--;
+            }
+            if (count == 0) {
+                if (obj.charAt(i) == ' ') {
+                    end = i - 1;
+                    String res = obj.substring(first, end + 1);
+                    if (res.startsWith("(") && res.endsWith(")")) {
+                        res = res.substring(1, res.length() - 1);
+                    } else {
+                        numOfParent++;
+                        if (numOfParent > 1) throw new NotAList("*** - APPEND: " + res + " is not a list");
+                    }
+                    sb.append(res + " ");
+                    first = i + 1;
+                }
+            }
+        }
+        String res = obj.substring(first, obj.length());
+        if (res.startsWith("(") && res.endsWith(")")) {
+            res = res.substring(1, res.length() - 1);
+        } else {
+            numOfParent++;
+            if (numOfParent > 1) throw new NotAList("*** - APPEND: " + res + " is not a list");
+        }
+        sb.append(res + ")");
+        return sb.toString();
     }
 
     public static String list(String input) {
@@ -171,7 +212,7 @@ public class Operators {
             if (count == 0) {
                 if (input.charAt(i) == ' ') {
                     end = i - 1;
-                    sb.append(input.substring(first, end + 1) + " ");
+                    sb.append(input.substring(first, end + 1).trim() + " ");
                     first = i + 1;
                 }
             }
@@ -193,13 +234,14 @@ public class Operators {
 
     public static String reverse(String list) {
         if (list == null || list.length() == 0) {
-            return null;
+            return NIL;
         }
         StringBuilder sb = new StringBuilder();
         List<String> result = new ArrayList<String>();
         if (list.startsWith("'")) {
             list = list.substring(2, list.length() - 1);
         }
+        list = list.trim();
         int len = list.length();
         int first = 0;
         int end = 0;
@@ -213,7 +255,7 @@ public class Operators {
             if (count == 0) {
                 if (list.charAt(i) == ' ') {
                     end = i - 1;
-                    result.add(0, list.substring(first, end + 1));
+                    result.add(0, list.substring(first, end + 1).trim());
                     first = i + 1;
                 }
             }
@@ -233,19 +275,20 @@ public class Operators {
 
     public static String sort(String list, String operator) {
         if (list == null || list.length() == 0) {
-            return null;
+            return NIL;
         }
         if (list.startsWith("'")) {
             list = list.substring(2, list.length() - 1);
         }
+        if (operator.startsWith("'")) operator = operator.substring(1);
         String num[] = list.split("\\s+");
         Double []result = new Double[num.length];
         for (int i = 0; i < num.length; i++) {
             result[i] = Double.parseDouble(num[i]);
         }
-        if (operator.charAt(1) == '>') {
+        if (operator.charAt(0) == '>') {
             Arrays.sort(result, Collections.<Double>reverseOrder());
-        } else if (operator.charAt(1) == '<') {
+        } else if (operator.charAt(0) == '<') {
             Arrays.sort(result);
         }
         StringBuilder sb = new StringBuilder();
@@ -263,17 +306,17 @@ public class Operators {
 
     public static String nth(String index, String list) throws Exception{
         if (list == null || list.length() == 0) {
-            return null;
+            return NIL;
         }
-        if(index.startsWith("'")) index = index.substring(1);
-        if(list.startsWith("'")) list = list.substring(1);
+        if (index.startsWith("'")) index = index.substring(1);
+        if (list.startsWith("'")) list = list.substring(1);
         if(!index.matches("\\+?\\d+")) throw new NTHNotANonNegativeInteger("*** - NTH: " + index + " is not a non-negative integer");
-        if(!list.startsWith("(") || !list.endsWith(")")) throw new NTHNotAList("*** - NTH: " + list + " is not a list");
+        if(!list.startsWith("(") || !list.endsWith(")")) throw new NotAList("*** - NTH: " + list + " is not a list");
+        list = list.substring(1, list.length() - 1);
         StringBuilder sb = new StringBuilder();
-        List<String> result = new ArrayList<String>();
-        if (list.startsWith("'")) {
-            list = list.substring(2, list.length() - 1);
-        }
+
+        List<String> result = new ArrayList<>();
+
         int len = list.length();
         int first = 0;
         int end = 0;
@@ -297,7 +340,7 @@ public class Operators {
         return result.get(num);
     }
 
-    public static String numberp(String obj) throws NotAValue, TooFewArguments {
+    public static String numberp(String obj) throws Exception {
         if (obj == null || obj.length() == 0) {
             throw new TooFewArguments("*** - EVAL: too few arguments given to NUMBERP: (NUMBERP)");
         }
@@ -312,6 +355,30 @@ public class Operators {
         return T;
     }
 
+    public static String consp(String obj) throws Exception{
+        if (obj.equals("NIL") || obj.equals("nil")) return NIL;
+        obj = obj.trim();
+        if (!obj.startsWith("'")) {
+            if (obj.split("\\s+").length > 1) {
+                throw new TooManyArguments("*** - EVAL: too many arguments given to CONSP: (CONSP " + obj + ")");
+            }
+            for (int i = 0; i < obj.length(); i++) {
+                char c = obj.charAt(i);
+                if (!(c >= '0' && c <= '9')) throw new NotAValue("*** - SYSTEM::READ-EVAL-PRINT: variable " + obj + " has no value");
+            }
+            return NIL;
+        } else {
+            obj = obj.substring(1);
+            if (!obj.startsWith("(") || !obj.endsWith(")")) {
+                if (obj.split("\\s+").length > 1) {
+                    throw new TooManyArguments("*** - EVAL: too many arguments given to CONSP: (CONSP " + obj + ")");
+                }
+                return NIL;
+            }
+            if (obj.equals("()")) return NIL;
+            return T;
+        }
+    }
 
     public static int length(String obj) throws TooManyArguments {
         if(obj.startsWith("'")) obj = obj.substring(1);
@@ -323,7 +390,6 @@ public class Operators {
             else throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
         }
     }
-
 
     private static int countElements(String obj) throws TooManyArguments {
         obj = obj.substring(1, obj.length() - 1);
@@ -357,7 +423,6 @@ public class Operators {
         return result;
     }
 
-
     static class DividedByZero extends Exception {
         public DividedByZero(String msg){
             super(msg);
@@ -366,6 +431,12 @@ public class Operators {
 
     static class TooManyArguments extends Exception{
         public  TooManyArguments(String msg) {
+            super(msg);
+        }
+    }
+
+    static class TooFewArguments extends Exception{
+        public TooFewArguments(String msg) {
             super(msg);
         }
     }
@@ -382,20 +453,14 @@ public class Operators {
         }
     }
 
-    static class NTHNotAList extends Exception{
-        public NTHNotAList(String msg) {
+    static class NotAList extends Exception{
+        public NotAList(String msg) {
             super(msg);
         }
     }
 
     static class LengthTooManyArg extends Exception {
         public LengthTooManyArg(String msg) {
-            super(msg);
-        }
-    }
-
-    static class TooFewArguments extends Exception{
-        public TooFewArguments(String msg) {
             super(msg);
         }
     }
@@ -410,10 +475,22 @@ public class Operators {
         System.out.println(cdr(s).toUpperCase());
         System.out.println(cons("1", "(2)"));
         System.out.println(eql("1", "'2.0"));
+
         System.out.println(nth("0", "'(a (aa (a)))"));
         System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
-        System.out.print("sad");
+        System.out.print("lenth: ");
         System.out.println(length("'((a b) aa () ((ds)) HJ   (232 789) () (sd)  )"));
-        System.out.print("sad");
+
+
+        System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
+        System.out.println("nth: " + nth("1", "'(a (1 3) c)"));
+        System.out.println("Reverse: " + reverse("'(1 3 (4 6) 9)"));
+        System.out.println("Sort: " + sort("'(4 6 1 2)", "'<"));
+        System.out.println("Numberp: " + numberp("23"));
+        System.out.println("List: " + list("2 3 4 '(4 '(8 9) 5)"));
+        System.out.println("Null: " + nullFunc("()"));
+        System.out.println("Consp: " + consp("'(112 1 2)"));
+        System.out.println("Append: " + append("'(3 5) 9"));
+
     }
 }
