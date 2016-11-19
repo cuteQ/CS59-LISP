@@ -313,28 +313,49 @@ public class Operators {
     }
 
 
-//    public static int length(String obj) throws TooManyArguments {
-//        if(obj.startsWith("'")) obj = obj.substring(1);
-//        if(obj.startsWith("\"") && obj.endsWith("\"")) {
-//            if(obj.split("\"").length > 2) throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
-//            return obj.length() - 2;
-//        } else {
-//            if(obj.startsWith("(") && obj.endsWith(")")) return countElements(obj);
-//            else throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
-//        }
-//    }
-//
-//
-//    private static int countElements(String obj) {
-//        obj = obj.substring(1, obj.length() - 1);
-//        int result = 0;
-//        Stack<Character> stack = new Stack<Character>();
-//        boolean letterAppear = false;
-//        for(int i = 0; i < obj.length(); i++) {
-//
-//            if(obj.charAt(i) == '(')
-//        }
-//    }
+    public static int length(String obj) throws TooManyArguments {
+        if(obj.startsWith("'")) obj = obj.substring(1);
+        if(obj.startsWith("\"") && obj.endsWith("\"")) {
+            if(obj.split("\"").length > 2) throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
+            return obj.length() - 2;
+        } else {
+            if(obj.startsWith("(") && obj.endsWith(")")) return countElements(obj);
+            else throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
+        }
+    }
+
+
+    private static int countElements(String obj) throws TooManyArguments {
+        obj = obj.substring(1, obj.length() - 1);
+        int result = 0;
+        obj = obj.replaceAll("\\s+", " ");
+        int count = 0;
+        int i = 0;
+        while(i < obj.length()) {
+            if(count == 0) {
+                while (i < obj.length() && (obj.charAt(i) != '(' && obj.charAt(i) != ')' && obj.charAt(i) != ' ')) {
+                    i++;
+                }
+                if(i == obj.length()) break;
+
+                if(obj.charAt(i) == '(') {
+                    count++;
+                    i++;
+                    continue;
+                } else if(obj.charAt(i) == ')') {
+                    count--;
+                    break;
+                } else if(obj.charAt(i) == ' ') i++;
+                result++;
+            } else {
+                if (obj.charAt(i) == '(') count++;
+                else if(obj.charAt(i) == ')') count--;
+                i++;
+            }
+        }
+        if(count != 0) throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
+        return result;
+    }
 
 
     static class DividedByZero extends Exception {
@@ -391,5 +412,8 @@ public class Operators {
         System.out.println(eql("1", "'2.0"));
         System.out.println(nth("0", "'(a (aa (a)))"));
         System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
+        System.out.print("sad");
+        System.out.println(length("'((a b) aa () ((ds)) HJ   (232 789) () (sd)  )"));
+        System.out.print("sad");
     }
 }
