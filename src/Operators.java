@@ -7,56 +7,52 @@ import java.util.*;
 public class Operators {
     private static final String NIL = "NIL";
     private static final String T = "T";
-    // Case '+'
-    public static int add(int num1, int num2) {
-        System.out.print("int");
-        return num1 + num2;
+
+    public static String add(List<String> parameters) throws WrongParameter {
+//        if(parameters.size() < 2) throw new WrongParameter("Has too few parameters!");
+//        if(parameters.size() > 2) throw new WrongParameter("Has too many parameters!");
+        double result = 0;
+        for(String str: parameters) {
+            result += Double.parseDouble(str);
+        }
+        return String.valueOf(result);
     }
 
-    public static double add(double num1, double num2) {
-        System.out.print("double");
-        return num1 + num2;
+    public static String subtract(List<String> parameters) {
+        double result = 0;
+        for(String str: parameters) {
+            result -= Double.parseDouble(str);
+        }
+        return String.valueOf(result);
     }
 
-    public static int subtract(int num1, int num2) {
-        System.out.print("int");
-        return num1 - num2;
+
+    public static String multiply(List<String> parameters) {
+        double result = 0;
+        for(String str: parameters) {
+            result *= Double.parseDouble(str);
+        }
+        return String.valueOf(result);
     }
 
-    public static double substract(double num1, double num2) {
-        System.out.print("double");
-        return num1 - num2;
+    public static String divide(List<String> parameters) throws DividedByZero {
+        double result = 0;
+        for(String str: parameters) {
+            result /= Double.parseDouble(str);
+        }
+        return String.valueOf(result);
     }
 
-    public static int multiply(int num1, int num2) {
-        System.out.print("int");
-        return num1 * num2;
-    }
-
-    public static double multiply(double num1, double num2) {
-        System.out.print("double");
-        return num1 * num2;
-    }
-
-    public static int divide(int num1, int num2) throws DividedByZero {
-        System.out.print("int");
-        if(num2 == 0) throw new DividedByZero("*** - /: division by zero");
-        return num1 / num2;
-    }
-
-    public static double divide(double num1, double num2) {
-        System.out.print("double");
-        return num1 / num2;
-    }
-
-    public static String car(String list) {
+    public static String car(List<String> parameters) {
+        String list = parameters.get(0);
         if(list.startsWith("'")) list = list.substring(1);
         list = list.substring(1, list.length() - 1);
         list = list.replaceAll("\\s+", " ");
         return list.split(" ")[0].toUpperCase();
     }
 
-    public static String cdr(String list) {
+    public static String cdr(List<String> parameters) {
+        String list = parameters.get(0);
         if(list.startsWith("'")) list = list.substring(1);
         list = list.substring(1, list.length() - 1);
         String[] lists = list.replaceAll("\\s+", " ").split(" ");
@@ -70,7 +66,9 @@ public class Operators {
         return sb.toString().toUpperCase();
     }
 
-    public static String cons(String obj1, String obj2) {
+    public static String cons(List<String> parameters) {
+        String obj1 = parameters.get(0);
+        String obj2 = parameters.get(1);
         if(obj1.startsWith("'")) obj1 = obj1.substring(1);
         if(obj2.startsWith("'")) obj2 = obj2.substring(1);
         StringBuilder sb = new StringBuilder();
@@ -86,18 +84,22 @@ public class Operators {
         return sb.toString().toUpperCase();
     }
 
-    public static String atom(String obj) throws TooManyArguments {
+    public static String atom(List<String> parameters) throws TooManyArguments {
+        String obj = parameters.get(0);
         if(obj.startsWith("(") && obj.endsWith(")")) return NIL;
         if(obj.split(" ").length > 1) throw new TooManyArguments("*** - EVAL: too many arguments given to ATOM: (ATOM '1 2)");
         return T;
     }
 
-    public static String not(String obj) {
+    public static String not(List<String> parameters) {
+        String obj = parameters.get(0);
         if(obj.equals(NIL) || obj.equals("()")) return T;
         else return NIL;
     }
 
-    public static String lessThan(String obj1, String obj2) throws NotAValue {
+    public static String lessThan(List<String> parameters) throws NotAValue {
+        String obj1 = parameters.get(0);
+        String obj2 = parameters.get(1);
         if(obj1.startsWith("'")) obj1 = obj1.substring(1);
         if(obj2.startsWith("'")) obj2 = obj2.substring(1);
         if(!obj1.matches("-?\\d+(\\.\\d+)?")) throw new NotAValue("*** - SYSTEM::READ-EVAL-PRINT: variable" + obj1.toUpperCase() + "has no value");
@@ -106,7 +108,9 @@ public class Operators {
         else return NIL;
     }
 
-    public static String largeThan(String obj1, String obj2) throws NotAValue {
+    public static String largeThan(List<String> parameters) throws NotAValue {
+        String obj1 = parameters.get(0);
+        String obj2 = parameters.get(1);
         if(obj1.startsWith("'")) obj1 = obj1.substring(1);
         if(obj2.startsWith("'")) obj2 = obj2.substring(1);
         if(!obj1.matches("-?\\d+(\\.\\d+)?")) throw new NotAValue("*** - SYSTEM::READ-EVAL-PRINT: variable" + obj1.toUpperCase() + "has no value");
@@ -115,7 +119,9 @@ public class Operators {
         else return NIL;
     }
 
-    public static String eql(String obj1, String obj2) throws NotAValue {
+    public static String eql(List<String> parameters) throws NotAValue {
+        String obj1 = parameters.get(0);
+        String obj2 = parameters.get(1);
         if(!obj1.startsWith("'") && !obj1.matches("-?\\d+(\\.\\d+)?")) throw new NotAValue("*** - SYSTEM::READ-EVAL-PRINT: variable" + obj1.toUpperCase() + "has no value");
         if(!obj2.startsWith("'") && !obj2.matches("-?\\d+(\\.\\d+)?")) throw new NotAValue("*** - SYSTEM::READ-EVAL-PRINT: variable" + obj2.toUpperCase() + "has no value");
         if(obj1.startsWith("'")) obj1 = obj1.substring(1);
@@ -124,7 +130,9 @@ public class Operators {
         return NIL;
     }
 
-    public static String member(String item, String obj) {
+    public static String member(List<String> parameters) {
+        String item = parameters.get(0);
+        String obj = parameters.get(1);
         if(item.startsWith("'")) item = item.substring(1);
         if(obj.startsWith("'")) obj = obj.substring(1);
         if(item.startsWith("(")) return NIL;
@@ -144,7 +152,10 @@ public class Operators {
     }
 
 
-    public static String append(String obj) throws Exception{
+    public static String append(List<String> parameters) throws Exception{
+        String obj = parameters.get(0);
+        String obj2 = parameters.get(1);
+        System.out.println("sdkgkjhg" + obj + obj2);
         StringBuilder sb = new StringBuilder();
         obj = obj.trim();
         int first = 0;
@@ -189,7 +200,8 @@ public class Operators {
         return sb.toString();
     }
 
-    public static String list(String input) {
+    public static String list(List<String> parameters) {
+        String input = parameters.get(0);
         StringBuilder sb = new StringBuilder();
         if (!input.startsWith("'")) {
             sb.append("(");
@@ -224,7 +236,8 @@ public class Operators {
         return sb.toString();
     }
 
-    public static String nullFunc(String obj) {
+    public static String nullFunc(List<String> parameters) {
+        String obj = parameters.get(0);
         if (obj.equals("()") || obj.equals("nil") || obj.equals("NIL")) {
             return T;
         } else {
@@ -232,7 +245,8 @@ public class Operators {
         }
     }
 
-    public static String reverse(String list) {
+    public static String reverse(List<String> parameters) {
+        String list = parameters.get(0);
         if (list == null || list.length() == 0) {
             return NIL;
         }
@@ -273,7 +287,9 @@ public class Operators {
         return sb.toString();
     }
 
-    public static String sort(String list, String operator) {
+    public static String sort(List<String> parameters) {
+        String list = parameters.get(0);
+        String operator = parameters.get(1);
         if (list == null || list.length() == 0) {
             return NIL;
         }
@@ -304,14 +320,18 @@ public class Operators {
         return sb.toString();
     }
 
-    public static String nth(String index, String list) throws Exception{
+    public static String nth(List<String> parameters) throws Exception{
+        String index = parameters.get(0);
+        String list = parameters.get(1);
+
+        System.out.println("nth index:" + index + " nth list: " + list);
         if (list == null || list.length() == 0) {
             return NIL;
         }
         if (index.startsWith("'")) index = index.substring(1);
         if (list.startsWith("'")) list = list.substring(1);
         if(!index.matches("\\+?\\d+")) throw new NTHNotANonNegativeInteger("*** - NTH: " + index + " is not a non-negative integer");
-        if(!list.startsWith("(") || !list.endsWith(")")) throw new NotAList("*** - NTH: " + list + " is not a list");
+//        if(!list.startsWith("(") || !list.endsWith(")")) throw new NotAList("*** - NTH: " + list + " is not a list");
         list = list.substring(1, list.length() - 1);
         StringBuilder sb = new StringBuilder();
 
@@ -340,7 +360,8 @@ public class Operators {
         return result.get(num);
     }
 
-    public static String numberp(String obj) throws Exception {
+    public static String numberp(List<String> parameters) throws Exception {
+        String obj = parameters.get(0);
         if (obj == null || obj.length() == 0) {
             throw new TooFewArguments("*** - EVAL: too few arguments given to NUMBERP: (NUMBERP)");
         }
@@ -355,7 +376,8 @@ public class Operators {
         return T;
     }
 
-    public static String consp(String obj) throws Exception{
+    public static String consp(List<String> parameters) throws Exception{
+        String obj = parameters.get(0);
         if (obj.equals("NIL") || obj.equals("nil")) return NIL;
         obj = obj.trim();
         if (!obj.startsWith("'")) {
@@ -380,18 +402,19 @@ public class Operators {
         }
     }
 
-    public static int length(String obj) throws TooManyArguments {
+    public static String length(List<String> parameters) throws TooManyArguments {
+        String obj = parameters.get(0);
         if(obj.startsWith("'")) obj = obj.substring(1);
         if(obj.startsWith("\"") && obj.endsWith("\"")) {
             if(obj.split("\"").length > 2) throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
-            return obj.length() - 2;
+            return String.valueOf(obj.length() - 2);
         } else {
             if(obj.startsWith("(") && obj.endsWith(")")) return countElements(obj);
             else throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
         }
     }
 
-    private static int countElements(String obj) throws TooManyArguments {
+    private static String countElements(String obj) throws TooManyArguments {
         obj = obj.substring(1, obj.length() - 1);
         int result = 0;
         obj = obj.replaceAll("\\s+", " ");
@@ -420,7 +443,13 @@ public class Operators {
             }
         }
         if(count != 0) throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
-        return result;
+        return String.valueOf(result);
+    }
+
+    static class WrongParameter extends Exception {
+        public WrongParameter(String msg){
+            super(msg);
+        }
     }
 
     static class DividedByZero extends Exception {
@@ -467,30 +496,30 @@ public class Operators {
 
     public static void main(String[] strs) throws Exception {
         int num1 = 21;
-        double num2 = 2.0;
+        int num2 = 2;
         String s = "(s         s b c (d   e))";
         s = s.replaceAll("\\s+", " ");
-        System.out.println(divide(num1, num2));
-        System.out.println(car(s));
-        System.out.println(cdr(s).toUpperCase());
-        System.out.println(cons("1", "(2)"));
-        System.out.println(eql("1", "'2.0"));
-
-        System.out.println(nth("0", "'(a (aa (a)))"));
-        System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
-        System.out.print("lenth: ");
-        System.out.println(length("'((a b) aa () ((ds)) HJ   (232 789) () (sd)  )"));
-
-
-        System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
-        System.out.println("nth: " + nth("1", "'(a (1 3) c)"));
-        System.out.println("Reverse: " + reverse("'(1 3 (4 6) 9)"));
-        System.out.println("Sort: " + sort("'(4 6 1 2)", "'<"));
-        System.out.println("Numberp: " + numberp("23"));
-        System.out.println("List: " + list("2 3 4 '(4 '(8 9) 5)"));
-        System.out.println("Null: " + nullFunc("()"));
-        System.out.println("Consp: " + consp("'(112 1 2)"));
-        System.out.println("Append: " + append("'(3 5) 9"));
+//        System.out.println(add(num1, num2));
+//        System.out.println(car(s));
+//        System.out.println(cdr(s).toUpperCase());
+//        System.out.println(cons("1", "(2)"));
+//        System.out.println(eql("1", "'2.0"));
+//
+//        System.out.println(nth("0", "'(a (aa (a)))"));
+//        System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
+//        System.out.print("lenth: ");
+//        System.out.println(length("'((a b) aa () ((ds)) HJ   (232 789) () (sd)  )"));
+//
+//
+//        System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
+//        System.out.println("nth: " + nth("1", "'(a (1 3) c)"));
+//        System.out.println("Reverse: " + reverse("'(1 3 (4 6) 9)"));
+//        System.out.println("Sort: " + sort("'(4 6 1 2)", "'<"));
+//        System.out.println("Numberp: " + numberp("23"));
+//        System.out.println("List: " + list("2 3 4 '(4 '(8 9) 5)"));
+//        System.out.println("Null: " + nullFunc("()"));
+//        System.out.println("Consp: " + consp("'(112 1 2)"));
+//        System.out.println("Append: " + append("'(3 5) 9"));
 
     }
 }
