@@ -490,7 +490,7 @@ public class Operators {
         System.out.println("List: " + list("2 3 4 '(4 '(8 9) 5)"));
         System.out.println("Null: " + nullFunc("()"));
         System.out.println("Consp: " + consp("'(112 1 2)"));
-        System.out.println("Append: " + append("'(3 5) 9"));
+        System.out.println("Append: " + append("'(20 100 12) 'a"));
 
     }
 }

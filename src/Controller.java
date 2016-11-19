@@ -103,6 +103,6 @@ public class Controller {
     }
 
     public static void main(String []args) throws Exception{
-        String res = Controller.funcall("(funcall (lambda (x y) (+ x y 100)) 40 20)");
+        String res = Controller.funcall("(funcall (lambda (x y) (+ (nth x '(7 9 (23 1) 12)) (+ 1 (+ 2 3) 2) (+ y 3))) 3 100)");
     }
 }
