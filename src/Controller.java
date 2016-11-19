@@ -4,9 +4,28 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by dnalwqer on 18/11/2016.
+ * Created by qianyuzhong on 11/18/16.
  */
 public class Controller {
+    public static void main(String[] strs) throws Exception {
+//        String expression = "(funcall (lambda (x y) (+ x y 100)) 40 20)";
+//        String expression = "(+ (nth 3 '(7 9 (23 1) 12)) (+ 1 (+ 2 3) 2) (+ 2 3))";
+//        String expression = "(funcall (lambda (x y) (+  (nth x '(7 9 (23 1) 12)) (+ 1 (+ 2 3) 2) (+ y 3))) 3 100)";
+//        String expression = "(funcall (lambda (x y) (+ (car (nth x '(7 9 (23 1) 12))) (+ 1 (+ 2 3) 2) (+ y 3))) 2 100)";
+//        String expression = "(funcall (lambda (x y z) (sort '(x y 100 z) '<)) 40 20 12)";
+//        String expression = "(funcall (lambda (x y z) (reverse '(x y 100 z))) 40 20 12)";
+//        String expression = "(funcall (lambda (x y z) (car (cdr '(x y 100 z)))) 40 20 12)";
+//        String expression = "(funcall (lambda (x y z) (append (cdr '(x y 100 z)) 'a)) 40 20 12)";
+//        String expression = "(funcall (lambda (x y z) (list '(x y) 100 z)) 40 10 50)";
+//        String expression = "(funcall (lambda (x) (numberp x)) 20)";
+        String expression = "(funcall (lambda (x y) (consp '(x y 10))) 20 10)";
+        String regularExpression = funcall(expression);
+
+        System.out.println(regularExpression);
+        String result = parse(regularExpression);
+        System.out.println(result);
+    }
+
     public static final String NIL = "NIL";
     public static String funcall(String obj) throws Exception {
         if (!obj.startsWith("(") || !obj.endsWith(")")) return NIL;
@@ -92,7 +111,6 @@ public class Controller {
             String value = map.get(key);
             result = result.replaceAll(key, value);
         }
-        System.out.println(result);
         return result;
     }
 
@@ -102,7 +120,132 @@ public class Controller {
         }
     }
 
-    public static void main(String []args) throws Exception{
-        String res = Controller.funcall("(funcall (lambda (x y) (+ (nth x '(7 9 (23 1) 12)) (+ 1 (+ 2 3) 2) (+ y 3))) 3 100)");
+    public static String parse(String expression) throws Exception {
+        expression = expression.trim().replaceAll("//s+", " ");
+        int len = expression.length();
+        int index = 0;
+        String operator = "";
+        List<String> parameters = new ArrayList<>();
+        while(index < len) {
+            if(index == 0 && expression.charAt(index) == '(') {
+                index++;
+                StringBuilder sb = new StringBuilder();
+                while(index < len && expression.charAt(index) != ' ' && expression.charAt(index) != ')') {
+                    sb.append(expression.charAt(index++));
+                }
+                operator = sb.toString().toUpperCase();
+            } else if(expression.charAt(index) == '(') {
+                int count = 1, begin = index++;
+                while(index < len && count > 0) {
+                    if(expression.charAt(index) == '(') count++;
+                    else if(expression.charAt(index) == ')') count--;
+                    index++;
+                }
+                String exp = expression.substring(begin, index);
+                parameters.add(parse(exp));
+            } else if(expression.charAt(index) == '\'') {
+                int begin = index++;
+                if(expression.charAt(index) == '(') {
+                    int count = 1;
+                    index = index + 1;
+                    while (index < len && count > 0) {
+                        if(expression.charAt(index) == '(') count++;
+                        else if(expression.charAt(index) == ')') count--;
+                        index++;
+                    }
+                } else {
+                    while(index < len && expression.charAt(index) != ' ') index++;
+                }
+                parameters.add(expression.substring(begin, index));
+            } else if(expression.charAt(index) == ' ') {
+                index++;
+                continue;
+            } else if(expression.charAt(index) == ')') {
+                index++;
+                continue;
+            }else {
+                int begin = index++;
+                while(index < len && (expression.charAt(index) != ' ' && expression.charAt(index) != ')')) index++;
+                parameters.add(expression.substring(begin, index));
+            }
+        }
+
+        String result = callFunction(operator, parameters);
+        return result;
+    }
+
+    public static String callFunction(String operator, List<String> parameters) throws Exception {
+        String result;
+        switch(operator) {
+            case "+":
+                result = Operators.add(parameters);
+                break;
+            case "-":
+                result = Operators.subtract(parameters);
+                break;
+            case "*":
+                result = Operators.multiply(parameters);
+                break;
+            case "/":
+                result = Operators.divide(parameters);
+                break;
+            case "APPEND":
+                result = Operators.append(parameters);
+                break;
+            case "ATOM":
+                result = Operators.atom(parameters);
+                break;
+            case "CAR":
+                result = Operators.car(parameters);
+                break;
+            case "CDR":
+                result = Operators.cdr(parameters);
+                break;
+            case "CONS":
+                result = Operators.cons(parameters);
+                break;
+            case "CONSP":
+                result = Operators.consp(parameters);
+                break;
+            case "EQL":
+                result = Operators.eql(parameters);
+                break;
+            case ">":
+                result = Operators.largeThan(parameters);
+                break;
+            case "<":
+                result = Operators.lessThan(parameters);
+                break;
+            case "LENGTH":
+                result = Operators.length(parameters);
+                break;
+            case "LIST":
+                result = Operators.list(parameters);
+                break;
+            case "MEMBER":
+                result = Operators.member(parameters);
+                break;
+            case "NOT":
+                result = Operators.not(parameters);
+                break;
+            case "NTH":
+                result = Operators.nth(parameters);
+                break;
+            case "NULLFUNC":
+                result = Operators.nullFunc(parameters);
+                break;
+            case "NUMBERP":
+                result = Operators.numberp(parameters);
+                break;
+            case "REVERSE":
+                result = Operators.reverse(parameters);
+                break;
+            case "SORT":
+                result = Operators.sort(parameters);
+                break;
+            default:
+                result = "To be develop or Invalid operator name!";
+        }
+        return result;
     }
 }
