@@ -173,17 +173,17 @@ public class Operators {
             else throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
         }
     }
-//
-//    private static int countElements(String obj) {
-//        obj = obj.substring(1, obj.length() - 1);
-//        int result = 0;
-//        Stack<Character> stack = new Stack<Character>();
-//        boolean letterAppear = false;
-//        for(int i = 0; i < obj.length(); i++) {
-//
-////            if(obj.charAt(i) == '(')
-//        }
-//    }
+
+    private static int countElements(String obj) {
+        obj = obj.substring(1, obj.length() - 1);
+        int result = 0;
+        Stack<Character> stack = new Stack<Character>();
+        boolean letterAppear = false;
+        for(int i = 0; i < obj.length(); i++) {
+
+            if(obj.charAt(i) == '(')
+        }
+    }
 
     static class DividedByZero extends Exception {
         public DividedByZero(String msg){
