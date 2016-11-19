@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LISP.iml" filepath="$PROJECT_DIR$/LISP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CS59-LISP.iml" filepath="$PROJECT_DIR$/CS59-LISP.iml" />
     </modules>
   </component>
 </project>
