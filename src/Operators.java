@@ -1,4 +1,3 @@
-import java.security.spec.ECFieldF2m;
 import java.util.*;
 
 /**
@@ -241,6 +240,7 @@ public class Operators {
         if (list.startsWith("'")) {
             list = list.substring(2, list.length() - 1);
         }
+        list = list.trim();
         int len = list.length();
         int first = 0;
         int end = 0;
@@ -254,7 +254,7 @@ public class Operators {
             if (count == 0) {
                 if (list.charAt(i) == ' ') {
                     end = i - 1;
-                    result.add(0, list.substring(first, end + 1));
+                    result.add(0, list.substring(first, end + 1).trim());
                     first = i + 1;
                 }
             }
