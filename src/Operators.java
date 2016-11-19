@@ -262,12 +262,8 @@ public class Operators {
 
     public static String nth(String index, String list) throws Exception{
         if (list == null || list.length() == 0) {
-            return null;
+            return NIL;
         }
-        if(index.startsWith("'")) index = index.substring(1);
-        if(list.startsWith("'")) list = list.substring(1);
-        if(!index.matches("\\+?\\d+")) throw new NTHNotANonNegativeInteger("*** - NTH: " + index + " is not a non-negative integer");
-        if(!list.startsWith("(") || !list.endsWith(")")) throw new NTHNotAList("*** - NTH: " + list + " is not a list");
         StringBuilder sb = new StringBuilder();
         List<String> result = new ArrayList<>();
         if (list.startsWith("'")) {
@@ -312,16 +308,16 @@ public class Operators {
     }
 
 
-    public static int length(String obj) throws TooManyArguments {
-        if(obj.startsWith("'")) obj = obj.substring(1);
-        if(obj.startsWith("\"") && obj.endsWith("\"")) {
-            if(obj.split("\"").length > 2) throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
-            return obj.length() - 2;
-        } else {
-            if(obj.startsWith("(") && obj.endsWith(")")) return countElements(obj);
-            else throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
-        }
-    }
+//    public static int length(String obj) throws TooManyArguments {
+//        if(obj.startsWith("'")) obj = obj.substring(1);
+//        if(obj.startsWith("\"") && obj.endsWith("\"")) {
+//            if(obj.split("\"").length > 2) throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
+//            return obj.length() - 2;
+//        } else {
+//            if(obj.startsWith("(") && obj.endsWith(")")) return countElements(obj);
+//            else throw new TooManyArguments("*** - EVAL: too many arguments given to LENGTH: " + obj);
+//        }
+//    }
 
 //    private static int countElements(String obj) {
 //        obj = obj.substring(1, obj.length() - 1);
@@ -386,7 +382,7 @@ public class Operators {
         System.out.println(cdr(s).toUpperCase());
         System.out.println(cons("1", "(2)"));
         System.out.println(eql("1", "'2.0"));
-        System.out.println(nth("1", "'(a)"));
+        System.out.println(nth("1", "'(a (1 3) c)"));
         System.out.println(member("1", "'( (1) (1) 1 (2 2) 2)"));
     }
 }
