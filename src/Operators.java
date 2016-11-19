@@ -1,5 +1,3 @@
-package basicFunction;
-
 import java.security.spec.ECFieldF2m;
 import java.util.*;
 
